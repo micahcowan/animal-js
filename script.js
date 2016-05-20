@@ -10,6 +10,7 @@ let states = {
   , enter() {
       setQuestion(info)
       $('.beginRestart button').text("Begin");
+      $('input').prop('value', '')
     }
   }
 , ask: {
@@ -21,10 +22,30 @@ let states = {
       $('.guess p span').text(question.animal)
     }
   }
+, add: {
+    show: 'h1, .beginRestart, .add'
+  }
+, enterQuestion: {
+    show: 'h1, .beginRestart, .enterQuestion'
+  , enter() {
+      let anim = $('.enterQuestion .anim');
+      anim.eq(0).text(newAnimal);
+      anim.eq(1).text(question.animal);
+    }
+  }
+, enterYesNo: {
+    show: 'h1, .beginRestart, .enterYesNo'
+  , enter() {
+      $('.enterYesNo .q').text(newQuestion);
+      $('.enterYesNo .anim').text(newAnimal);
+    }
+  }
 }
 
 let question;
 let state;
+let newAnimal;
+let newQuestion;
 
 setupEvents();
 gotoState('start')
@@ -47,22 +68,59 @@ function setupEvents() {
   })
 
   // Correct?
-  $('#correct').click(function() {
-    $('.guess').slideUp();
-    $('.beginRestart').hide();
+  function messageAndRestart(msg) {
+    $('body > *').slideUp();
     let h1 = $('h1')
-    h1.slideUp(1, () => {
+    h1.slideUp(undefined, () => {
       let text = h1.text();
-      h1.text('I got it!');
+      h1.text(msg);
       h1.slideDown();
       setTimeout(() => {
-        h1.slideUp(1, () => {
+        h1.slideUp(undefined, () => {
           h1.text(text);
           gotoState('start')
         });
       }, 1500);
     });
+  }
+  $('#correct').click(() => { messageAndRestart("I got it!") })
+
+  //Incorrect?
+  $('#incorrect').click(function() {
+    gotoState('add')
   })
+
+  // Animal done
+  $('.add button').click(function () {
+    newAnimal = $('.add input')[0].value;
+    gotoState('enterQuestion')
+  })
+
+  // Added question done
+  $('.enterQuestion button').click(function () {
+    newQuestion = $('.enterQuestion input')[0].value;
+    gotoState('enterYesNo');
+  })
+
+  // yes/no defined for new question
+  $('.enterYesNo button').click(function() {
+    let answer = $(this).text().substring(0,1).toLowerCase();
+    let oldAnimal = question.animal;
+    delete question.animal;
+    question.q = newQuestion;
+    question[answer] = { animal: newAnimal };
+    question[answer == 'y'? 'n' : 'y'] = { animal: oldAnimal };
+    messageAndRestart(`Okay! I will remember ${newAnimal}!`);
+  })
+
+  // Hook up Enter key on input fields.
+  $('input[type="text"]').keydown(
+    function(e) {
+      if (e.keyCode == 13) {
+        $(this).siblings('button').eq(0).click();
+      }
+    }
+  )
 }
 
 function gotoState(s) {
@@ -75,6 +133,9 @@ function gotoState(s) {
   if (state !== undefined)
     $(states[state].show).not(newS.show).slideUp();
   $(newS.show).slideDown();
+
+  // focus any newly appeared text inputs
+  //$('input').focus()
 
   state = s;
 }
