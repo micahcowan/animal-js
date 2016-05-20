@@ -48,6 +48,9 @@ let state;
 let newAnimal;
 let newQuestion;
 
+let animalRE = /"animal"\s*:\s*"(?:[^"\\]*)(?:\\.[^"\\]*)*"/g;
+let strRE = /"(?:[^"\\]*)(?:\\.[^"\\]*)*"/;
+
 setupEvents();
 setupStorage();
 gotoState('start')
@@ -116,7 +119,7 @@ function setupEvents() {
     if ((typeof localStorage) !== undefined) {
       localStorage.setItem('animalGuessInfo', newInfo);
     }
-    $('#info').text(newInfo);
+    showInfo();
     messageAndRestart(`Okay! I will remember ${newAnimal}!`);
   })
 
@@ -140,7 +143,7 @@ function gotoState(s) {
   if (state !== undefined)
     $(states[state].show).not(newS.show).slideUp();
   $(newS.show).slideDown();
-  $('#info').show()
+  $('#info').show();
 
   // focus any newly appeared text inputs
   //$('input').focus()
@@ -168,9 +171,26 @@ function setupStorage() {
     $('#clear').click(function() {
       localStorage.removeItem('animalGuessInfo');
       info = initInfo;
-      $('#info').text(JSON.stringify(info));
+      showInfo();
       gotoState('start');
     })
   }
-  $('#info').text(JSON.stringify(info));
+  showInfo();
+}
+
+function showInfo() {
+  let infoS = JSON.stringify(info);
+  // Sanitize for HTML.
+  infoS
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&rt;');
+  info
+  $('#info').html(
+    infoS.replace(animalRE, a => {
+      let p = a.substring(0, 8); // includes "animal"
+      let P = a.substring(8); // includes the value string
+      return p + P.replace(strRE, b => `<strong>${b}</strong>`);
+    }).replace(/"/g, '&quot;')
+  );
 }
