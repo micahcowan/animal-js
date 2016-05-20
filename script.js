@@ -45,6 +45,24 @@ function setupEvents() {
     var answer = $(this).text().substring(0,1).toLowerCase();
     setQuestion(question[answer]);
   })
+
+  // Correct?
+  $('#correct').click(function() {
+    $('.guess').slideUp();
+    $('.beginRestart').hide();
+    let h1 = $('h1')
+    h1.slideUp(1, () => {
+      let text = h1.text();
+      h1.text('I got it!');
+      h1.slideDown();
+      setTimeout(() => {
+        h1.slideUp(1, () => {
+          h1.text(text);
+          gotoState('start')
+        });
+      }, 1500);
+    });
+  })
 }
 
 function gotoState(s) {
