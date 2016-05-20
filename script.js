@@ -112,11 +112,11 @@ function setupEvents() {
     question.q = newQuestion;
     question[answer] = { animal: newAnimal };
     question[answer == 'y'? 'n' : 'y'] = { animal: oldAnimal };
+    let newInfo = JSON.stringify(info);
     if ((typeof localStorage) !== undefined) {
-        let newInfo = JSON.stringify(info);
-        localStorage.setItem('animalGuessInfo', newInfo);
-        $('#info').text(newInfo);
+      localStorage.setItem('animalGuessInfo', newInfo);
     }
+    $('#info').text(newInfo);
     messageAndRestart(`Okay! I will remember ${newAnimal}!`);
   })
 
@@ -161,7 +161,6 @@ function setupStorage() {
     let newInfo = localStorage.getItem('animalGuessInfo');
     if (newInfo) {
       info = JSON.parse(newInfo);
-      $('#info').text(newInfo);
     }
 
     $('#clear').show();
@@ -172,4 +171,5 @@ function setupStorage() {
       gotoState('start');
     })
   }
+  $('#info').text(JSON.stringify(info));
 }
