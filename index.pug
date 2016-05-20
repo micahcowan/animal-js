@@ -1,0 +1,31 @@
+doctype HTML
+html
+  head
+    title Animal Guesser
+    script(src="https://code.jquery.com/jquery-2.2.3.min.js")
+  body
+    h1 Think of an animal, and I'll try to guess what it is!
+    div.beginRestart
+      button Begin
+    div.question
+      p Does it have flippers?
+      button#yes Yes
+      button#no No
+    div.guess
+      p Is it a dolphin?
+      button#correct Yes
+      button#incorrect No
+    div.add
+      p Please tell me what animal you were thinking of:
+      input(type="text",size="30")
+      button#animDone Done
+    div.enterQuestion
+      p.
+        Please type a yes-or-no question that would distinguish #[span.anim a ONE] from #[span.anim a TWO]:
+      input(type="text",size="60")
+      button#quesDone Done
+    div.enterYesNo
+      p
+        | What would the answer to #[span.q user-typed question] be, if the animal is #[span.anim a dolphin]?
+        button#enterYes Yes
+        button#enterNo No
