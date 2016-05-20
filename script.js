@@ -4,12 +4,13 @@ let info = {
   y: {animal: "a dolphin"},
   n: {animal: "a kangaroo"}
 }
+let initInfo = info;
 let states = {
   start: {
     show: 'h1, .beginRestart'
   , enter() {
       setQuestion(info)
-      $('.beginRestart button').text("Begin");
+      $('#begin').text("Begin");
       $('input').prop('value', '')
     }
   }
@@ -48,13 +49,14 @@ let newAnimal;
 let newQuestion;
 
 setupEvents();
+setupStorage();
 gotoState('start')
 
 function setupEvents() {
   // Begin button
-  $('.beginRestart button').click(() => {
+  $('#begin').click(() => {
     if (state == 'start') {
-      $('.beginRestart button').text('Restart');
+      $('#begin').text('Restart');
       gotoState('ask');
     }
     else
@@ -110,6 +112,9 @@ function setupEvents() {
     question.q = newQuestion;
     question[answer] = { animal: newAnimal };
     question[answer == 'y'? 'n' : 'y'] = { animal: oldAnimal };
+    if ((typeof localStorage) !== undefined) {
+        localStorage.setItem('animalGuessInfo', JSON.stringify(info));
+    }
     messageAndRestart(`Okay! I will remember ${newAnimal}!`);
   })
 
@@ -146,4 +151,21 @@ function setQuestion(q) {
     $('.question p').text(q.q);
   else
     gotoState('guess')
+}
+
+function setupStorage() {
+  if ((typeof localStorage) !== undefined) {
+    let newInfo = localStorage.getItem('animalGuessInfo');
+    if (newInfo) {
+      info = JSON.parse(newInfo);
+    }
+
+    $('#clear').show();
+
+    $('#clear').click(function() {
+      localStorage.removeItem('animalGuessInfo');
+      info = initInfo;
+      gotoState('start');
+    })
+  }
 }
