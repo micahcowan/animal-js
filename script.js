@@ -113,7 +113,9 @@ function setupEvents() {
     question[answer] = { animal: newAnimal };
     question[answer == 'y'? 'n' : 'y'] = { animal: oldAnimal };
     if ((typeof localStorage) !== undefined) {
-        localStorage.setItem('animalGuessInfo', JSON.stringify(info));
+        let newInfo = JSON.stringify(info);
+        localStorage.setItem('animalGuessInfo', newInfo);
+        $('#info').text(newInfo);
     }
     messageAndRestart(`Okay! I will remember ${newAnimal}!`);
   })
@@ -138,6 +140,7 @@ function gotoState(s) {
   if (state !== undefined)
     $(states[state].show).not(newS.show).slideUp();
   $(newS.show).slideDown();
+  $('#info').show()
 
   // focus any newly appeared text inputs
   //$('input').focus()
@@ -158,6 +161,7 @@ function setupStorage() {
     let newInfo = localStorage.getItem('animalGuessInfo');
     if (newInfo) {
       info = JSON.parse(newInfo);
+      $('#info').text(newInfo);
     }
 
     $('#clear').show();
