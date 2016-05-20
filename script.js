@@ -168,6 +168,7 @@ function setupStorage() {
     $('#clear').click(function() {
       localStorage.removeItem('animalGuessInfo');
       info = initInfo;
+      $('#info').text(JSON.stringify(info));
       gotoState('start');
     })
   }
